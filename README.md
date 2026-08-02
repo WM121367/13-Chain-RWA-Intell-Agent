@@ -27,4 +27,4 @@ It continuously monitors 13 crucial chains/protocols on a 10-second loop, sendin
 | **Fast Finality / Enterprise L1**| **Hedera (HBAR)** | Mirror Node Block height, HTS RWA token activity |
 | **CBDC / Financial Guarantees** | **Algorand (ALGO)** | Last Round (Block creation), Institutional smart contracts |
 | **Interoperability Framework** | **Polkadot / Canton / Tron** | Substrate XCM messages & Canton Domain Sequence |
-| **Enterprise EVM & Testnets** | **Sepolia / Linea / Base** | EVM Block Numbers, Ondo Finance RWA contract events |
+| **Enterprise EVM & Testnets** | **Hyperledger Besu / Linea / Sepolia / Base** | EVM Execution layer, Block Numbers, Ondo Finance RWA contract events |
