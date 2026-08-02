@@ -10,7 +10,7 @@ This project is a decentralized monitoring and analyst agent designed to track t
 
 Rather than relying purely on superficial price movements or technical indicators, this system models the BIS "Unified Ledger" vision, SWIFT messaging rails, Central Bank Digital Currency (CBDC) corridors, and Real-World Asset (RWA) tokenization networks into a complete "railway map."
 
-It continuously monitors 13 crucial chains/protocols on a 10-second loop, sending real-time Discord alerts upon detecting cross-chain signals or significant on-chain activities. Furthermore, it natively supports uAgents protocols (ChatMessage & DataQueryRequest) to serve as an automated data provider for other AI Agents on the AgentVerse network.
+It continuously monitors 13 crucial chains/protocols on a 30-second loop, sending real-time Discord alerts upon detecting cross-chain signals or significant on-chain activities. Furthermore, it natively supports uAgents protocols (ChatMessage & DataQueryRequest) to serve as an automated data provider for other AI Agents on the AgentVerse network.
 
 ---
 
