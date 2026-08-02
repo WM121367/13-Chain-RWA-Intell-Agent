@@ -1,30 +1,35 @@
-# 🌐 13-Chain Unified Ledger Spy & Signal Monitor Agent (Ver 2.0.0)
+# 🌐 13-Chain Unified Ledger & Regulatory Intelligence Agent
 
-A multi-agent intelligence system built on Fetch.ai's uAgents framework to monitor tokenization infrastructures, cross-chain signals, and institutional settlement rails (BIS Project Agorá / ISO 20022 / Interoperability Layers) in real time.
-
----
-
-## 📌 Overview
-
-This project is a decentralized monitoring and analyst agent designed to track the irreversible structural shifts in global financial architecture.
-
-Rather than relying purely on superficial price movements or technical indicators, this system models the BIS "Unified Ledger" vision, SWIFT messaging rails, Central Bank Digital Currency (CBDC) corridors, and Real-World Asset (RWA) tokenization networks into a complete "railway map."
-
-It continuously monitors 13 crucial chains/protocols on a 30-second loop, sending real-time Discord alerts upon detecting cross-chain signals or significant on-chain activities. Furthermore, it natively supports uAgents protocols (ChatMessage & DataQueryRequest) to serve as an automated data provider for other AI Agents on the AgentVerse network.
+An autonomous multi-chain monitoring and intelligence agent built on the Fetch.ai (uAgents) framework. 
+It provides real-time layer-1/layer-2 infrastructure status alongside macro-financial and regulatory news.
 
 ---
 
-## 🗺️ Financial Rail System Architecture (13 Chains)
+## 🚀 Features
 
-| Layer / Role | Target Protocol | Monitored Metrics / Signal Triggers |
-| :--- | :--- | :--- |
-| **Macro / Liquidity Anchor** | **Bitcoin (BTC)** | Block Height, Macro liquidity movement tracking |
-| **Whale Settlement / Liquidity** | **XRP (XRPL)** | Validated Ledger, Institutional ODL & RLUSD liquidity |
-| **Retail CBDC / Cross-Border** | **Stellar (XLM)** | Ledger Sequence, Emerging market anchor issuances |
-| **Interoperability & Control** | **Quant (QNT)** | Overledger Gateway Health & Multi-chain smart contracts |
-| **Oracle & Data Connection** | **Chainlink (LINK / CCIP)** | Sepolia CCIP messaging & LINK token transfers |
-| **Trade Finance / Settlement** | **XDC Network (XDC)** | R3 Corda bridge interactions, Trade asset tokenization |
-| **Fast Finality / Enterprise L1**| **Hedera (HBAR)** | Mirror Node Block height, HTS RWA token activity |
-| **CBDC / Financial Guarantees** | **Algorand (ALGO)** | Last Round (Block creation), Institutional smart contracts |
-| **Interoperability Framework** | **Polkadot / Canton / Tron** | Substrate XCM messages & Canton Domain Sequence |
-| **Enterprise EVM & Testnets** | **Hyperledger Besu / Linea / Sepolia / Base** | EVM Execution layer, Block Numbers, Ondo Finance RWA contract events |
+* **Multi-Chain Real-Time Monitoring:** 
+  Tracks 13+ blockchain networks including Bitcoin, Solana, Linea, XRPL, Stellar, Hedera, Algorand, Polkadot, Avalanche, etc.
+* **Macro & Regulatory Intelligence (New):** 
+  Automated RSS ingestion tracking key policy makers and macro entities:
+  - **Legislative & Regulatory:** US House Financial Services Committee, SEC
+  - **Global Financial Institutions:** BIS (Bank for International Settlements)
+  - **Ecosystem & RWA Leaders:** Chainlink (CCIP), Ripple, Hedera, Stellar
+* **Autonomous Payment & Data Delivery:** 
+  Supports the Fetch.ai Payment Protocol (`RequestPayment` / `CommitPayment`) for instant, agent-to-agent automated data transactions using FET.
+
+---
+
+## 💰 Data Packages & Pricing (FET)
+
+1. `basic_chain` (0.1 FET): Single-chain real-time block height and signals.
+2. `all_chains` (0.5 FET): Complete 13-chain status summary.
+3. `regulatory_news` (1.0 FET): Latest macro news, SEC updates, and House Committee announcements.
+4. `full_intelligence` (3.0 FET): Combined On-chain data + Regulatory/News contextual intelligence.
+
+---
+
+## 🔌 Protocols Supported
+
+- `DataQueryRequest` / `DataQueryResponse`
+- `Agent Payment Protocol` (FET Direct Payment)
+- `chat_proto` (Text Query & Support)
