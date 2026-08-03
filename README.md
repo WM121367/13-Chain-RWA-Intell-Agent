@@ -1,78 +1,52 @@
-# 🌐 13-Chain Unified Ledger, Macro Treasury & Regulatory Intelligence Agent
+# 🤖 13-Chain Unified Ledger RWA & Macro Intelligence Agent (v2.2.0)
 
-An institutional-grade autonomous multi-chain monitoring and intelligence agent built on the Fetch.ai (uAgents) framework.  
-It provides real-time layer-1/layer-2 infrastructure status alongside US Debt Clock macro indicators, regulatory news, and commodity reasoning.
+> **A Multi-Chain On-Chain Surveillance & Global Macro Intelligence Engine powered by uAgents Protocol.**
 
----
-
-## 🚀 Features
-
-* **Multi-Chain Real-Time Monitoring:**  
-  Tracks 13+ blockchain networks including Bitcoin, Ethereum (Sepolia), Solana, Linea, Base, XRPL, Stellar, Hedera, Algorand, TRON, Canton, XDC, and Quant.
-* **Macro Treasury & US Debt Clock Metrics (New):**  
-  Integrates national debt, interest payment momentum, and paper-to-physical leverage ratios to evaluate fiat devaluation pressures and institutional hedging sentiment:
-  - **US National Debt Tracking:** Real-time updates on national debt accumulation ($39.9T+)
-  - **Daily Interest Load:** Tracking interest burden on treasury reserves ($3.5B+/day)
-  - **Macro Valuation Bias:** Evaluates hard asset (Gold/Silver/RWA) rotation demand vs. fiat inflation
-* **Legislative & Regulatory Intelligence:**  
-  Automated RSS ingestion tracking key policy makers and macro entities:
-  - **Legislative & Regulatory:** US House Financial Services Committee, SEC Press Releases
-  - **Global Financial Institutions:** BIS (Bank for International Settlements)
-  - **Ecosystem & RWA Leaders:** Chainlink (CCIP), Ripple, Hedera, Stellar
-* **Autonomous Dynamic Pricing & Data Delivery:**  
-  Supports the Fetch.ai Payment Protocol (`RequestPayment` / `CommitPayment`) for instant, agent-to-agent automated data transactions using FET.
+`13-Chain Unified Ledger Spy Agent` は、13の主要ブロックチェーン（EVM, Non-EVM, RWA専用チェーン）上のスマートコントラクトイベントや流動性移動をリアルタイム監視し、超国家機関・政府・主要メガバンクの一次情報（RSS / IR）と統合解析して高精度なアルファシグナルを生成する自律型AI Agentです。
 
 ---
 
-## 💰 Data Packages & Pricing (FET)
+## 🚀 Key Features
 
-| Package Name | Price | Description |
-| :--- | :--- | :--- |
-| `single_chain` | **0.1 FET** | Real-time block height and signals for a specified single blockchain network. |
-| `summary` / `all` | **0.5 FET** | Complete 13-chain status summary. |
-| `news` / `regulatory` | **1.0 FET** | Latest macro financial news, SEC updates, and legislative releases. |
-| `full_intelligence` | **3.0 FET** | **Institutional Grade:** On-Chain + Regulatory News + **US Debt Clock & Treasury Macro Metrics**. |
+* **13-Chain Multi-Ledger Monitoring:**
+  * Sepolia (Ethereum), Bitcoin, XRPL, Linea, Base, Solana, Hedera, TRON, Canton, Stellar, Algorand, XDC, Quant の全 **13-Chain** のブロックハイト、イベントログ、コントラクト更新を監視。
+  * LINK, CCIP Router, Ondo Finance などの特定RWAコントラクトの `Transfer` イベントをリアルタイム検知。
+* **Global Macro & Institutional Intelligence Engine:**
+  * 超国家機関・公的機関・メガバンク（BRICS Pay, WEF, US House Financial Services Committee, SEC, CFTC, US Treasury, Federal Reserve, ECB, BIS, Social Security Administration）のプレスリリースを自動巡回。
+  * `KEYWORD_MAP` 照合アルゴリズムによるニュースとオンチェーンアクティビティの自動相関推論（Confidence Score 算出）。
+* **Cross-Chain RWA & Liquidity Signal Generation:**
+  * BlackRock MMF (BUIDL) の Mint/Burn イベントと XRPL 上の RLUSD 流動性・発行体の動きを組み合わせた相関シグナルの生成。
+* **uAgents Protocol Integration & Dynamic Quoting:**
+  * uAgents 規格に準拠。クエリ範囲（`full_intelligence`, `macro`, `summary`, `single_chain`）に応じた動的な見積もり（FET決済）と着金確認後の自動データ納品処理。
+* **Embedded Legal & Security Guardrails:**
+  * 無登録投資助言リスクを回避する `NOT FINANCIAL ADVICE` 免責事項（Disclaimer）の出力レスポンス自動挿入。
+  * 悪意ある外部テキストに対するサニタイズ（プロンプトインジェクション対策）とセキュリティ設計。
 
 ---
 
-## 🧠 Example Signal Output (`full_intelligence`)
+## 🏗️ Architecture Overview
 
-```json
-{
-  "agent_version": "2.1.1",
-  "timestamp": 1785704100.0,
-  "chain_statuses": {
-    "sepolia": 11407863,
-    "bitcoin": 882104,
-    "xrp": 91048201
-  },
-  "latest_signals": [
-    {
-      "chain": "SEPOLIA",
-      "confidence": "HIGH",
-      "score": 0.92,
-      "matched_topics": ["chainlink", "rwa"],
-      "summary": "On-chain activity for SEPOLIA correlates with news/regulatory updates (chainlink, rwa)."
-    }
-  ],
-  "macro_treasury_metrics": {
-    "total_debt": "$39.9T+",
-    "daily_interest": "$3.5B",
-    "paper_to_silver_ratio": "CRITICAL_HIGH",
-    "fiat_devaluation_signal": "HIGH_INFLATION_PRESSURE",
-    "macro_bias": "BULLISH_HARD_ASSETS"
-  }
-}
+```text
+ ┌─────────────────────────────────────────────────────────────┐
+ │    Global Macro & Regulatory RSS Collector (BRICS/WEF/Fed)   │
+ └──────────────────────────────┬──────────────────────────────┘
+                                │ News Text & Topic Extraction
+                                ▼
+ ┌─────────────────────────────────────────────────────────────┐
+ │                13-Chain Intelligence Core Engine            │
+ └──────────────┬──────────────────────────────┬───────────────┘
+                │                              │
+                ▼                              ▼
+  【13-Chain On-Chain Watcher】             【Correlated Signal Processing】
+  ・Alchemy / XRPL / Mempool Node            ・Confidence Score Scoring (0.92)
+  ・BUIDL / RLUSD / CCIP Events              ・Dynamic FET Quote & uAgent Delivery
 ```
-🔌 Protocols Supported
-DataQueryRequest / DataQueryResponse
+🛠️ Usage & Protocols
+Message Models
+DataQueryRequest: chain_name ("full", "macro", "all", "sepolia" など) を指定して照会。
 
-Agent Payment Protocol (FET Direct Payment via RequestPayment / CommitPayment)
-
-chat_proto (Text Query & Interactive Agent Support)
+RequestPayment / CommitPayment: 規定料金（0.1 ~ 3.0 FET）の支払い後、即時にデータ納品 JSON を返却。
 
 ⚠️ Disclaimer
-Not Financial Advice (NFA) / Do Your Own Research (DYOR):
-
-This agent is an automated data processing node designed solely for informational, research, and monitoring purposes. The intelligence provided (including on-chain activity, US debt metrics, news correlation, and market sentiment reasoning) does not constitute investment, financial, or trading advice. Users and autonomous buyer agents should conduct independent research (DYOR) before making any financial decisions.
+This agent is developed for informational and analytical purposes only. NOT FINANCIAL ADVICE. All analytical signals produced by this 13-Chain agent should be used purely for research and tool-level insights.
 ```
