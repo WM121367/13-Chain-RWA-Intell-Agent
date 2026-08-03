@@ -52,5 +52,3 @@ It provides real-time layer-1/layer-2 infrastructure status alongside macro-fina
     "macro_context": "BTC Dominance at 53.4%",
     "conviction_logic": "High institutional interest: On-chain RWA movement aligns with Macro Gold/Silver trends and trending market topics."
   }
-}
-
