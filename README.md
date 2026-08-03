@@ -52,27 +52,13 @@ It provides real-time layer-1/layer-2 infrastructure status alongside macro-fina
     "macro_context": "BTC Dominance at 53.4%",
     "conviction_logic": "High institutional interest: On-chain RWA movement aligns with Macro Gold/Silver trends and trending market topics."
   }
-```  <-- ここに ``` を追加！
-
----
-
-### 📄 正しいマークダウンの書き方（例）
-
-```markdown
-## 🧠 Example Signal Output (`full_intelligence`)
-
-```json
-{
-  "chain": "SEPOLIA",
-  "confidence": "HIGH",
-  "score": 0.95,
-  "summary": "On-chain activity for SEPOLIA correlates with news/regulatory updates (chainlink, rwa).",
-  "coingecko_reasoning": {
-    "rwa_sector_trend": "+4.2% (24h)",
-    "gold_market_momentum": "Gold Tokens 24h Change: +1.8%",
-    "silver_market_momentum": "Silver Tokens 24h Change: +3.5%",
-    "trending_coins_search": ["LINK", "PAXG", "XRP", "HBAR"],
-    "macro_context": "BTC Dominance at 53.4%",
-    "conviction_logic": "High institutional interest: On-chain RWA movement aligns with Macro Gold/Silver trends and trending market topics."
+ligns with Macro Gold/Silver trends and trending market topics."
   }
 }
+```
+---
+
+## ⚠️ Disclaimer
+
+**Not Financial Advice (NFA) / Do Your Own Research (DYOR):**  
+This agent is an automated data processing node designed solely for informational, research, and monitoring purposes. The intelligence provided (including on-chain activity, news correlation, and market sentiment reasoning) does not constitute investment, financial, or trading advice. Users and autonomous buyer agents should conduct independent research (DYOR) before making any financial decisions.
