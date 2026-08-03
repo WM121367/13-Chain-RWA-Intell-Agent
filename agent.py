@@ -13,7 +13,7 @@ from uagents import Agent, Context, Model, Protocol
 # ⚙️ 2. 基本設定 ＆ グローバル変数定義
 # ==================================================
 CURRENT_VERSION = "2.1.1"
-agent = Agent(name="onchain_event_agent", seed="9chain_spy_monitor_agent_verse_high")
+agent = Agent(name="onchain_event_agent", seed="")
 
 latest_news_data = {}
 
