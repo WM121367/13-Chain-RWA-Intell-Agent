@@ -1,35 +1,55 @@
 # 🌐 13-Chain Unified Ledger & Regulatory Intelligence Agent
 
-An autonomous multi-chain monitoring and intelligence agent built on the Fetch.ai (uAgents) framework. 
-It provides real-time layer-1/layer-2 infrastructure status alongside macro-financial and regulatory news.
+An autonomous multi-chain monitoring and intelligence agent built on the Fetch.ai (uAgents) framework.  
+It provides real-time layer-1/layer-2 infrastructure status alongside macro-financial/regulatory news, market momentum, and tokenized commodity reasoning.
 
 ---
 
 ## 🚀 Features
 
-* **Multi-Chain Real-Time Monitoring:** 
-  Tracks 13+ blockchain networks including Bitcoin, Solana, Linea, XRPL, Stellar, Hedera, Algorand, Polkadot, Avalanche, etc.
-* **Macro & Regulatory Intelligence (New):** 
+* **Multi-Chain Real-Time Monitoring:**  
+  Tracks 13+ blockchain networks including Bitcoin, Ethereum (Sepolia), Solana, Linea, Base, XRPL, Stellar, Hedera, Algorand, TRON, Canton, XDC, and Quant.
+* **Macro & Regulatory Intelligence:**  
   Automated RSS ingestion tracking key policy makers and macro entities:
-  - **Legislative & Regulatory:** US House Financial Services Committee, SEC
+  - **Legislative & Regulatory:** US House Financial Services Committee, SEC Press Releases
   - **Global Financial Institutions:** BIS (Bank for International Settlements)
   - **Ecosystem & RWA Leaders:** Chainlink (CCIP), Ripple, Hedera, Stellar
-* **Autonomous Payment & Data Delivery:** 
+* **CoinGecko Market & Commodity Reasoning (New):**  
+  Integrates multi-dimensional market reasoning into signals to validate conviction levels:
+  1. **Sector Trends:** RWA (Real-World Assets) sector market cap & volume dynamics
+  2. **Trending Topics:** Real-time trending coin searches
+  3. **Macro Context:** BTC Dominance & market-wide sentiment
+  4. **Commodity Momentum:** Tokenized Gold (PAXG/XAUT) & Silver token market activity
+* **Autonomous Dynamic Pricing & Data Delivery:**  
   Supports the Fetch.ai Payment Protocol (`RequestPayment` / `CommitPayment`) for instant, agent-to-agent automated data transactions using FET.
 
 ---
 
 ## 💰 Data Packages & Pricing (FET)
 
-1. `basic_chain` (0.1 FET): Single-chain real-time block height and signals.
-2. `all_chains` (0.5 FET): Complete 13-chain status summary.
-3. `regulatory_news` (1.0 FET): Latest macro news, SEC updates, and House Committee announcements.
-4. `full_intelligence` (3.0 FET): Combined On-chain data + Regulatory/News contextual intelligence.
+| Package Name | Price | Description |
+| :--- | :--- | :--- |
+| `single_chain` | **0.1 FET** | Real-time status for a specified single blockchain network. |
+| `summary` / `all` | **0.5 FET** | Complete 13-chain status summary. |
+| `news` / `regulatory` | **1.0 FET** | Latest macro financial news, SEC updates, and legislative releases. |
+| `full_intelligence` | **3.0 FET** | **Institutional Grade:** On-Chain + Regulatory News + CoinGecko & Gold/Silver Market Reasoning. |
 
 ---
 
-## 🔌 Protocols Supported
+## 🧠 Example Signal Output (`full_intelligence`)
 
-- `DataQueryRequest` / `DataQueryResponse`
-- `Agent Payment Protocol` (FET Direct Payment)
-- `chat_proto` (Text Query & Support)
+```json
+{
+  "chain": "SEPOLIA",
+  "confidence": "HIGH",
+  "score": 0.95,
+  "summary": "On-chain activity for SEPOLIA correlates with news/regulatory updates (chainlink, rwa).",
+  "coingecko_reasoning": {
+    "rwa_sector_trend": "+4.2% (24h)",
+    "gold_market_momentum": "Gold Tokens 24h Change: +1.8%",
+    "silver_market_momentum": "Silver Tokens 24h Change: +3.5%",
+    "trending_coins_search": ["LINK", "PAXG", "XRP", "HBAR"],
+    "macro_context": "BTC Dominance at 53.4%",
+    "conviction_logic": "High institutional interest: On-chain RWA movement aligns with Macro Gold/Silver trends and trending market topics."
+  }
+}
