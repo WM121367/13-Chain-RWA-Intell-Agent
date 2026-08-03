@@ -53,3 +53,9 @@ It provides real-time layer-1/layer-2 infrastructure status alongside macro-fina
     "conviction_logic": "High institutional interest: On-chain RWA movement aligns with Macro Gold/Silver trends and trending market topics."
   }
 }
+---
+
+## ⚠️ Disclaimer
+
+**Not Financial Advice (NFA) / Do Your Own Research (DYOR):**  
+This agent is an automated data processing node designed solely for informational, research, and monitoring purposes. The intelligence provided (including on-chain activity, news correlation, and market sentiment reasoning) does not constitute investment, financial, or trading advice. Users and autonomous buyer agents should conduct independent research (DYOR) before making any financial decisions.
