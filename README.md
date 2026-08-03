@@ -63,3 +63,16 @@ It provides real-time layer-1/layer-2 infrastructure status alongside US Debt Cl
     "macro_bias": "BULLISH_HARD_ASSETS"
   }
 }
+```
+🔌 Protocols Supported
+DataQueryRequest / DataQueryResponse
+
+Agent Payment Protocol (FET Direct Payment via RequestPayment / CommitPayment)
+
+chat_proto (Text Query & Interactive Agent Support)
+
+⚠️ Disclaimer
+Not Financial Advice (NFA) / Do Your Own Research (DYOR):
+
+This agent is an automated data processing node designed solely for informational, research, and monitoring purposes. The intelligence provided (including on-chain activity, US debt metrics, news correlation, and market sentiment reasoning) does not constitute investment, financial, or trading advice. Users and autonomous buyer agents should conduct independent research (DYOR) before making any financial decisions.
+```
