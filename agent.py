@@ -13,7 +13,7 @@ from uagents import Agent, Context, Model, Protocol
 # ==================================================
 # ⚙️ 2. 基本設定 ＆ グローバル変数定義
 # ==================================================
-CURRENT_VERSION = "2.4.0"  # 👈 X402 Payment Verification & Retry Protocol Integrated
+CURRENT_VERSION = "2.5.0"  # 👈 Added Farside BTC ETF Flow Integration & Security Hardening
 
 AGENT_SEED = os.getenv("AGENT_SEED", "xxxxxxxxxxxxxxx")
 agent = Agent(name="onchain_event_agent")
@@ -34,8 +34,8 @@ async def handle_chat_message(ctx: Context, sender: str, msg: ChatMessage):
     ctx.logger.info(f"💬 チャット受信 ({sender}): {msg.message}")
     
     reply_text = (
-        f"🤖 13-Chain Unified Ledger RWA, Metal & Macro Intelligence Agent (Ver {CURRENT_VERSION}) です！\n"
-        f"現在 13 チェーンの監視、CoinGecko RWA/Metal 市場データ巡回、および主要金融・超国家機関の一次情報を自動照合中です。\n"
+        f"🤖 13-Chain Unified Ledger RWA, Metal, BTC ETF & Macro Intelligence Agent (Ver {CURRENT_VERSION}) です！\n"
+        f"現在 13 チェーンの監視、Farside BTC ETF Flow、CoinGecko RWA/Metal 市場データ、および主要金融・超国家機関の一次情報を自動照合中です。\n"
         f"最新データは DataQueryRequest プロトコル経由で取得できます。"
     )
     await ctx.send(sender, ChatMessage(message=reply_text))
@@ -76,14 +76,19 @@ class CommitPayment(Model):
     reference: str
 
 # --------------------------------------------------
-# 🌐 エンドポイント & アドレス定義
+# 🌐 エンドポイント & アドレス定義 (Secret管理へ移行)
 # --------------------------------------------------
-import os
+DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL", "")
 
-DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
-SEPOLIA_RPC_URL = "https://eth-sepolia.g.alchemy.com/v2/alch_hUmfIMazl7GsZ4UgO80LR"
-LINEA_RPC_URL = "https://linea-sepolia.g.alchemy.com/v2/alch_cUftWSKsQ93YGADeM4AHQ"
-BASE_RPC_URL = "https://base-sepolia.g.alchemy.com/v2/alch_cUftWSKsQ93YGADeM4AHQ"
+# Secret（環境変数）から各種API Keyを安全に取得
+ALCHEMY_SEPOLIA_KEY = os.getenv("ALCHEMY_SEPOLIA_KEY", "")
+ALCHEMY_LINEA_KEY = os.getenv("ALCHEMY_LINEA_KEY", "")
+ALCHEMY_BASE_KEY = os.getenv("ALCHEMY_BASE_KEY", "")
+
+SEPOLIA_RPC_URL = f"https://eth-sepolia.g.alchemy.com/v2/{ALCHEMY_SEPOLIA_KEY}" if ALCHEMY_SEPOLIA_KEY else "https://rpc.sepolia.org"
+LINEA_RPC_URL = f"https://linea-sepolia.g.alchemy.com/v2/{ALCHEMY_LINEA_KEY}" if ALCHEMY_LINEA_KEY else "https://rpc.sepolia.org"
+BASE_RPC_URL = f"https://base-sepolia.g.alchemy.com/v2/{ALCHEMY_BASE_KEY}" if ALCHEMY_BASE_KEY else "https://sepolia.base.org"
+
 SOLANA_RPC_URL = "https://api.mainnet-beta.solana.com"
 HEDERA_API_URL = "https://mainnet-public.mirrornode.hedera.com/api/v1/blocks?order=desc&limit=1"
 TRON_API_URL = "https://api.trongrid.io/wallet/getnowblock"
@@ -96,6 +101,9 @@ ALGORAND_API_URL = "https://mainnet-api.algonode.cloud/v2/status"
 XDC_RPC_URL = "https://erpc.xinfin.network"
 QNT_OVERLEDGER_API_URL = "https://api.overledger.io/v2/status"
 
+# Farside ETF Data Source
+FARSIDE_BTC_URL = "https://farside.co.uk/btc/"
+
 LINK_TOKEN_ADDRESS = "0x779877a7b0d9e8603169ddbd7836e478b4624789".lower()
 CCIP_ROUTER_ADDRESS = "0x0bf340722c3d830152e437c384122d1ed8202d0d".lower()
 ONDO_TOKEN_ADDRESS = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48".lower()
@@ -107,7 +115,7 @@ LEGAL_DISCLAIMER_TEXT = (
 )
 
 def send_discord_message(message_text: str):
-    if "discord.com" not in DISCORD_WEBHOOK_URL:
+    if not DISCORD_WEBHOOK_URL or "discord.com" not in DISCORD_WEBHOOK_URL:
         return
     payload = {"content": message_text, "username": "13-Chain Unified Ledger Agent"}
     try:
@@ -178,6 +186,33 @@ def parse_rss_xml(url: str) -> list:
     return entries
 
 # ==================================================
+# 📈 Farside Bitcoin ETF Flow RAW Collector
+# ==================================================
+def fetch_farside_btc_etf_flow() -> dict:
+    """Farside InvestorsからBTC ETFの最新日次資金流入出RAWデータを取得・抽出"""
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    }
+    try:
+        res = requests.get(FARSIDE_BTC_URL, headers=headers, timeout=10)
+        if res.status_code == 200:
+            text = res.text
+            matches = re.findall(r'(\d{2}\s+[A-Za-z]{3}\s+\d{4}).*?([-\d\.\(\)]+)\s*$', text, re.MULTILINE)
+            if matches:
+                latest_date, total_flow = matches[-1]
+                return {
+                    "source": "Farside Investors",
+                    "asset": "BTC_ETF",
+                    "latest_date": latest_date,
+                    "total_net_flow_usdm": total_flow,
+                    "status": "SUCCESS"
+                }
+            return {"source": "Farside Investors", "status": "PARSED_RAW_HTML", "url": FARSIDE_BTC_URL}
+    except Exception as e:
+        print(f"⚠️ Farside ETF Fetch Error: {e}")
+    return {"source": "Farside Investors", "status": "FAILED"}
+
+# ==================================================
 # 📊 CoinGecko API Collector (RWA & Metal Categories)
 # ==================================================
 COINGECKO_TARGET_CATEGORIES = [
@@ -206,12 +241,13 @@ def fetch_coingecko_category(category_id: str) -> list:
     return []
 
 # ==================================================
-# 🧠 オンチェーン ✕ ニュース ✕ 市場照合 ＆ ログエンジン
+# 🧠 オンチェーン ✕ ニュース ✕ ETF ✕ 市場照合 ＆ ログエンジン
 # ==================================================
 KEYWORD_MAP = {
     "ripple": ["xrpl", "ripple", "sec", "cross-border", "cbdc", "rlusd", "buidl"],
     "xrp": ["xrpl", "ripple", "sec", "cross-border", "cbdc", "rlusd", "buidl"],
     "sepolia": ["chainlink", "ccip", "rwa", "ethereum", "buidl", "blackrock"],
+    "bitcoin": ["btc", "etf", "ibit", "farside", "fbtc", "blackrock", "fidelity"],
     "chainlink": ["chainlink", "ccip", "rwa", "oracle", "tokenization", "dtcc"],
     "hedera": ["hedera", "hbar", "tokenization", "rwa", "iso 20022"],
     "stellar": ["stellar", "xlm", "payment", "sdf", "soroban"],
@@ -238,7 +274,7 @@ def generate_intelligence_signals() -> list:
                 "confidence": "HIGH",
                 "score": 0.92,
                 "matched_topics": matched_keywords,
-                "summary": f"On-chain activity for {chain_name.upper()} correlates with macro/regulatory/X402 updates ({', '.join(matched_keywords)}).",
+                "summary": f"On-chain activity for {chain_name.upper()} correlates with macro/regulatory/ETF updates ({', '.join(matched_keywords)}).",
                 "timestamp": time.time()
             })
             
@@ -279,13 +315,9 @@ async def fetch_rss_updates(ctx: Context):
 # 🔄 X402 / uAgents Retry Verification Engine
 # ==================================================
 async def verify_onchain_payment_with_retry(ctx: Context, tx_id: str, expected_amount: str, max_retries: int = 3, delay: float = 3.0) -> bool:
-    """
-    X402 / uAgents レール上のオンチェーン決済着金をリトライ付きで検証する
-    """
     for attempt in range(1, max_retries + 1):
-        ctx.logger.info(f"🔍 [Payment Verification] Try {attempt}/{max_retries} | TxHash: {tx_id}")
+        ctx.logger.info(f"🔍 [Payment Verification] Try {attempt}/{max_retries} | TxHash Masked: {tx_id[:6]}...{tx_id[-4:] if len(tx_id)>10 else ''}")
         
-        # TxHashのフォーマットチェック（簡易オンチェーン検証シミュレーション）
         if tx_id and len(tx_id) >= 10 and not tx_id.startswith("0x_invalid"):
             return True
             
@@ -304,7 +336,7 @@ async def startup_handler(ctx: Context):
     await fetch_rss_updates(ctx)
     send_discord_message(
         f"🚀 **13-Chain Unified Ledger Spy Agent (Ver: `{CURRENT_VERSION}`) 起動**\n"
-        f"• 監視対象: 13-Chain + RWA/Metal Market + Macro/X402 Intelligence\n"
+        f"• 監視対象: 13-Chain + BTC ETF Flow + RWA/Metal Market + Macro/X402 Intelligence\n"
         f"• データ提供アドレス: `{agent.address}`"
     )
 
@@ -357,9 +389,15 @@ async def check_and_update_task(ctx: Context):
         pass
 
     # --------------------------------------------------
-    # Step 2: 13-Chain の後に CoinGecko Metal/RWA スキャンを実行
+    # Step 2: Farside BTC ETF Flow Data 取得
     # --------------------------------------------------
     loop = asyncio.get_event_loop()
+    etf_data = await loop.run_in_executor(None, fetch_farside_btc_etf_flow)
+    latest_market_data["btc_etf_flow"] = etf_data
+
+    # --------------------------------------------------
+    # Step 3: CoinGecko Metal/RWA スキャンを実行
+    # --------------------------------------------------
     for cat_id in COINGECKO_TARGET_CATEGORIES:
         tokens = await loop.run_in_executor(None, fetch_coingecko_category, cat_id)
         if tokens:
@@ -377,11 +415,11 @@ async def handle_dynamic_quote(ctx: Context, sender: str, msg: DataQueryRequest)
     requested_target = (msg.chain_name or "all").lower()
     
     if requested_target in ["full", "intelligence", "full_intelligence"]:
-        quoted_price, desc = "3.0", "Institutional Grade Combined Intelligence (13-Chain + RWA/Metal + Macro/X402)"
+        quoted_price, desc = "3.0", "Institutional Grade Combined Intelligence (13-Chain + BTC ETF + RWA/Metal + Macro/X402)"
     elif requested_target in ["news", "regulatory", "macro"]:
         quoted_price, desc = "1.0", "Macro Financial & Regulatory News Package"
-    elif requested_target in ["market", "rwa", "metal"]:
-        quoted_price, desc = "1.5", "RWA & Metal/Commodity Market Intelligence Package"
+    elif requested_target in ["market", "rwa", "metal", "etf"]:
+        quoted_price, desc = "1.5", "RWA, Metal & BTC ETF Flow Market Intelligence Package"
     elif requested_target in ["all", "summary"]:
         quoted_price, desc = "0.5", "Complete 13-Chain Unified Status Summary"
     else:
@@ -400,9 +438,8 @@ async def handle_dynamic_quote(ctx: Context, sender: str, msg: DataQueryRequest)
 
 @agent.on_message(model=CommitPayment)
 async def handle_paid_delivery(ctx: Context, sender: str, msg: CommitPayment):
-    ctx.logger.info(f"💳 [{sender}] から着金通知を受信 (TxHash: {msg.transaction_id})")
+    ctx.logger.info(f"💳 [{sender}] から着金通知を受信")
     
-    # 🔄 X402 / uAgents Retry Verification の実行
     is_verified = await verify_onchain_payment_with_retry(
         ctx=ctx,
         tx_id=msg.transaction_id,
@@ -424,9 +461,9 @@ async def handle_paid_delivery(ctx: Context, sender: str, msg: CommitPayment):
         await ctx.send(sender, response_data)
         ctx.logger.info(f"🎉 [{sender}] への統合インテリジェンスデータの納品が完了しました！")
     else:
-        ctx.logger.error(f"❌ [{sender}] 着金検証失敗 (TxHash: {msg.transaction_id}) - 納品をキャンセルしました")
+        ctx.logger.error(f"❌ [{sender}] 着金検証失敗 - 納品をキャンセルしました")
         error_msg = ChatMessage(
-            message=f"⚠️ [HTTP 402 Payment Required] 着金確認がタイムアウトしました。TxHash '{msg.transaction_id}' を確認の上、再試行してください。"
+            message=f"⚠️ [HTTP 402 Payment Required] 着金確認がタイムアウトしました。TxHash を確認の上、再試行してください。"
         )
         await ctx.send(sender, error_msg)
 
