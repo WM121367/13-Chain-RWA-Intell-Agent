@@ -1,4 +1,4 @@
-# 13-Chain Unified Ledger & RWA / BTC ETF / Macro Intelligence Agent (Ver 2.5.0)
+# 🤖 13-Chain Unified Ledger & RWA / BTC ETF / Macro Intelligence Agent (Ver 2.5.0)
 
 ## 🌟 Overview
 This autonomous Agent operates as an institutional-grade intelligence oracle within the Fetch.ai / Agentverse ecosystem. It tracks real-time data across **13 distinct blockchain networks**, monitors **US Spot Bitcoin ETF flows (Farside Investors RAW data)**, analyzes **RWA & Precious Metal markets (CoinGecko)**, and cross-references macro updates from major financial bodies (SEC, BIS, US Treasury, FED, ECB) using a keyword matching engine.
