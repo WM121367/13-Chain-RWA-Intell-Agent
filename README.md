@@ -1,32 +1,40 @@
-# 🤖 13-Chain Unified Ledger RWA, Metal & Macro Intelligence Agent (v2.4.0)
+# 13-Chain Unified Ledger & RWA / BTC ETF / Macro Intelligence Agent (Ver 2.5.0)
 
-> **A Multi-Chain On-Chain Surveillance, RWA/Metal Market Scanner & Global Macro Intelligence Engine powered by uAgents Protocol with X402 Payment Retry Support.**
+## 🌟 Overview
+This autonomous Agent operates as an institutional-grade intelligence oracle within the Fetch.ai / Agentverse ecosystem. It tracks real-time data across **13 distinct blockchain networks**, monitors **US Spot Bitcoin ETF flows (Farside Investors RAW data)**, analyzes **RWA & Precious Metal markets (CoinGecko)**, and cross-references macro updates from major financial bodies (SEC, BIS, US Treasury, FED, ECB) using a keyword matching engine.
 
-`13-Chain Unified Ledger Spy Agent` is an autonomous AI agent that monitors smart contract events and liquidity movements in real time across 13 major blockchains (EVM, Non-EVM, and dedicated RWA chains). It integrates and analyzes real-time market data for RWAs and commodities (Gold/Metal) via the CoinGecko API alongside primary institutional intelligence (RSS/IR/X402 developments from supranational entities, governments, and major banks) to generate high-precision alpha signals.
+Data access is monetized via the **uAgents / X402 Payment Verification & Retry Protocol** with dynamic quote generation and automated delivery.
+
+---
+
+## 🚀 Key Features (v2.5.0 Update)
+- **13-Chain On-Chain Tracking:** Sepolia, Bitcoin, XRPL, Linea, Base, Solana, Hedera, TRON, Canton, Stellar, Algorand, XDC, and Quant Overledger.
+- **BTC ETF Flow Integration (NEW):** Real-time daily net inflow/outflow tracking for US Spot Bitcoin ETFs (IBIT, FBTC, BITB, ARKB, GBTC, etc.).
+- **RWA & Metal Market Scanning:** Automated monitoring of tokenized treasury, gold-backed tokens, and commodity categories.
+- **Macro & Regulatory Correlation Engine:** Automated RSS ingestion from SEC, FED, ECB, BIS, and House Financial Services with confidence scoring.
+- **Security Hardened Architecture:** API key encapsulation via environment variables (`Secrets`) and masked log printing for production safety.
 
 ---
 
-## 🚀 Key Features
+## 🛠️ Environment Variables (Agentverse Secrets Setup)
+To run this agent securely without exposing credentials, configure the following secrets in your environment:
 
-* **13-Chain Multi-Ledger Monitoring:**
-  * Tracks block height, event logs, and contract updates across all **13 chains**: Sepolia (Ethereum), Bitcoin, XRPL, Linea, Base, Solana, Hedera, TRON, Canton, Stellar, Algorand, XDC, and Quant.
-  * Real-time detection of `Transfer` events for specific RWA contracts such as LINK, CCIP Router, and Ondo Finance.
-* **CoinGecko RWA & Metal Category Intelligence:**
-  * Automatically scans market and price trends for `real-world-assets-rwa` (general RWA) and `gold-backed` / `commodity-backed` (metal and commodity tokens) via CoinGecko API following 13-Chain surveillance.
-  * Instantly detects 24-hour price surges (+10% or more) and volume spikes, logging and alerting on-chain activity.
-* **Global Macro, Institutional & X402 Intelligence Engine:**
-  * Automatically monitors press releases from supranational agencies, public institutions, and mega-banks (BRICS Pay, WEF, US House Financial Services Committee, SEC, CFTC, US Treasury, Federal Reserve, ECB, BIS, SSA).
-  * Detects developments in the **X402 Protocol** (agent-to-agent payment standard) and agentic payments using correlation algorithms.
-  * Executes automated correlation reasoning between macro news and on-chain activity via `KEYWORD_MAP` matching algorithms (calculating Confidence Scores).
-* **X402 / uAgents Retry Payment Protocol (NEW):**
-  * Executes up to 3 asynchronous retry verifications (at 3-second intervals) upon receiving payment notifications (`CommitPayment`) from client agents.
-  * Implements robust error handling for unconfirmed or delayed payments (HTTP 402-style retry request notifications) to enhance the reliability of agent-to-agent commerce.
-* **uAgents Protocol Integration & Dynamic Quoting:**
-  * Fully compliant with the uAgents standard. Delivers dynamic quotes (payable in FET) based on the requested query scope (`full_intelligence`, `market`, `macro`, `summary`, `single_chain`) and executes automated data delivery upon payment verification.
-* **Embedded Legal & Security Guardrails:**
-  * Automatically embeds a `NOT FINANCIAL ADVICE` disclaimer into response outputs to mitigate unregistered investment advice risks.
+| Key | Description |
+|---|---|
+| `AGENT_SEED` | Seed phrase for persistent agent address generation |
+| `ALCHEMY_SEPOLIA_KEY` | Alchemy API key for Sepolia RPC & log monitoring |
+| `ALCHEMY_LINEA_KEY` | Alchemy API key for Linea RPC |
+| `ALCHEMY_BASE_KEY` | Alchemy API key for Base RPC |
+| `DISCORD_WEBHOOK_URL` | (Optional) Discord Webhook for execution & signal alerts |
 
 ---
+
+## 📊 Data Query Protocol (`DataQueryRequest`)
+Query targets supported:
+- `full` / `intelligence`: Complete package (13-Chain + BTC ETF + RWA/Metal + Macro) — **3.0 FET**
+- `market` / `rwa` / `etf`: RWA, Metal & BTC ETF Flow Market Data — **1.5 FET**
+- `news` / `macro`: Regulatory & Global Financial News Signals — **1.0 FET**
+- `summary`: High-level status across all 13 chains — **0.5 FET**
 
 ## 🏗️ Architecture Overview
 
