@@ -75,7 +75,7 @@ class CommitPayment(Model):
 # --------------------------------------------------
 # 🌐 エンドポイント & アドレス定義
 # --------------------------------------------------
-DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1533234005682557140/d4Uh_PiX1pHHXwH963mw7UCFEWMtySRz4i7sejuXMHS23xifufpMTi_9e7aXyavyuNmw"
+DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/"
 
 SEPOLIA_RPC_URL = "https://eth-sepolia.g.alchemy.com/v2/alch_hUmfIMazl7GsZ4UgO80LR"
 LINEA_RPC_URL = "https://linea-sepolia.g.alchemy.com/v2/alch_cUftWSKsQ93YGADeM4AHQ"
