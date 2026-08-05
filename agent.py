@@ -7,13 +7,16 @@ import requests
 import time
 import urllib.request
 import xml.etree.ElementTree as ET
+import os
 from uagents import Agent, Context, Model, Protocol
 
 # ==================================================
 # ⚙️ 2. 基本設定 ＆ グローバル変数定義
 # ==================================================
 CURRENT_VERSION = "2.4.0"  # 👈 X402 Payment Verification & Retry Protocol Integrated
-agent = Agent(name="onchain_event_agent", seed="xxxxxxxxxxxxxxxxx")
+
+AGENT_SEED = os.getenv("AGENT_SEED", "xxxxxxxxxxxxxxx")
+agent = Agent(name="onchain_event_agent")
 
 latest_news_data = {}
 latest_market_data = {}
@@ -78,7 +81,6 @@ class CommitPayment(Model):
 import os
 
 DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
-
 SEPOLIA_RPC_URL = "https://eth-sepolia.g.alchemy.com/v2/alch_hUmfIMazl7GsZ4UgO80LR"
 LINEA_RPC_URL = "https://linea-sepolia.g.alchemy.com/v2/alch_cUftWSKsQ93YGADeM4AHQ"
 BASE_RPC_URL = "https://base-sepolia.g.alchemy.com/v2/alch_cUftWSKsQ93YGADeM4AHQ"
