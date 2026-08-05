@@ -2,29 +2,29 @@
 
 > **A Multi-Chain On-Chain Surveillance, RWA/Metal Market Scanner & Global Macro Intelligence Engine powered by uAgents Protocol with X402 Payment Retry Support.**
 
-`13-Chain Unified Ledger Spy Agent` は、13の主要ブロックチェーン（EVM, Non-EVM, RWA専用チェーン）上のスマートコントラクトイベントや流動性移動をリアルタイム監視し、CoinGecko API 経由の RWA / コモディティ（Gold / Metal）市場データ、および超国家機関・政府・主要メガバンクの一次情報（RSS / IR / X402動向）と統合解析して高精度なアルファシグナルを生成する自律型AI Agentです。
+`13-Chain Unified Ledger Spy Agent` is an autonomous AI agent that monitors smart contract events and liquidity movements in real time across 13 major blockchains (EVM, Non-EVM, and dedicated RWA chains). It integrates and analyzes real-time market data for RWAs and commodities (Gold/Metal) via the CoinGecko API alongside primary institutional intelligence (RSS/IR/X402 developments from supranational entities, governments, and major banks) to generate high-precision alpha signals.
 
 ---
 
 ## 🚀 Key Features
 
 * **13-Chain Multi-Ledger Monitoring:**
-  * Sepolia (Ethereum), Bitcoin, XRPL, Linea, Base, Solana, Hedera, TRON, Canton, Stellar, Algorand, XDC, Quant の全 **13-Chain** のブロックハイト、イベントログ、コントラクト更新を監視。
-  * LINK, CCIP Router, Ondo Finance などの特定RWAコントラクトの `Transfer` イベントをリアルタイム検知。
+  * Tracks block height, event logs, and contract updates across all **13 chains**: Sepolia (Ethereum), Bitcoin, XRPL, Linea, Base, Solana, Hedera, TRON, Canton, Stellar, Algorand, XDC, and Quant.
+  * Real-time detection of `Transfer` events for specific RWA contracts such as LINK, CCIP Router, and Ondo Finance.
 * **CoinGecko RWA & Metal Category Intelligence:**
-  * 13-Chain 監視の実行後、CoinGecko API から `real-world-assets-rwa`（RWA全般）、`gold-backed` / `commodity-backed`（メタル・コモディティ系トークン）の市場・価格動向を自動スキャン。
-  * 24時間の価格急増（+10%以上）やボリュームスパイクを即時に検知してログ・アラート化[cite: 7, 8]。
+  * Automatically scans market and price trends for `real-world-assets-rwa` (general RWA) and `gold-backed` / `commodity-backed` (metal and commodity tokens) via CoinGecko API following 13-Chain surveillance.
+  * Instantly detects 24-hour price surges (+10% or more) and volume spikes, logging and alerting on-chain activity.
 * **Global Macro, Institutional & X402 Intelligence Engine:**
-  * 超国家機関・公的機関・メガバンク（BRICS Pay, WEF, US House Financial Services Committee, SEC, CFTC, US Treasury, Federal Reserve, ECB, BIS, SSA）のプレスリリースを自動巡回[cite: 7, 8]。
-  * **X402 Protocol**（エージェント間決済規格）および Agentic Payments に関する動向を相関アルゴリズムで検知[cite: 7, 8]。
-  * `KEYWORD_MAP` 照合アルゴリズムによるニュースとオンチェーンアクティビティの自動相関推論（Confidence Score 算出）[cite: 7, 8]。
+  * Automatically monitors press releases from supranational agencies, public institutions, and mega-banks (BRICS Pay, WEF, US House Financial Services Committee, SEC, CFTC, US Treasury, Federal Reserve, ECB, BIS, SSA).
+  * Detects developments in the **X402 Protocol** (agent-to-agent payment standard) and agentic payments using correlation algorithms.
+  * Executes automated correlation reasoning between macro news and on-chain activity via `KEYWORD_MAP` matching algorithms (calculating Confidence Scores).
 * **X402 / uAgents Retry Payment Protocol (NEW):**
-  * クライアントエージェントからの着金通知（`CommitPayment`）に対し、最大3回（3秒間隔）の非同期リトライ検証を実施[cite: 7]。
-  * 決済未確定や遅延時のエラーハンドリング（HTTP 402 風の再試行要求通知）を実装し、エージェント間売買の信頼性を向上[cite: 7]。
+  * Executes up to 3 asynchronous retry verifications (at 3-second intervals) upon receiving payment notifications (`CommitPayment`) from client agents.
+  * Implements robust error handling for unconfirmed or delayed payments (HTTP 402-style retry request notifications) to enhance the reliability of agent-to-agent commerce.
 * **uAgents Protocol Integration & Dynamic Quoting:**
-  * uAgents 規格に準拠。クエリ範囲（`full_intelligence`, `market`, `macro`, `summary`, `single_chain`）に応じた動的な見積もり（FET決済）と着金確認後の自動データ納品処理[cite: 7, 8]。
+  * Fully compliant with the uAgents standard. Delivers dynamic quotes (payable in FET) based on the requested query scope (`full_intelligence`, `market`, `macro`, `summary`, `single_chain`) and executes automated data delivery upon payment verification.
 * **Embedded Legal & Security Guardrails:**
-  * 無登録投資助言リスクを回避する `NOT FINANCIAL ADVICE` 免責事項（Disclaimer）の出力レスポンス自動挿入[cite: 7, 8]。
+  * Automatically embeds a `NOT FINANCIAL ADVICE` disclaimer into response outputs to mitigate unregistered investment advice risks.
 
 ---
 
@@ -47,10 +47,10 @@
 ```
 🛠️ Usage & Protocols
 Message Models
-DataQueryRequest: chain_name ("full", "market", "macro", "all", "sepolia" など) を指定して照会[cite: 7, 8]。
+DataQueryRequest: Submit a query specifying chain_name (e.g., "full", "market", "macro", "all", "sepolia").
 
-RequestPayment / CommitPayment: 規定料金（0.1 ~ 3.0 FET）の支払い後、リトライ検証を経て即時にデータ納品 JSON を返却[cite: 7, 8]。
+RequestPayment / CommitPayment: Returns data delivery JSON instantly after payment processing (0.1 ~ 3.0 FET) and retry verification.
 
 ⚠️ Disclaimer
-This agent is developed for informational and analytical purposes only. NOT FINANCIAL ADVICE. All analytical signals produced by this 13-Chain agent should be used purely for research and tool-level insights[cite: 7, 8].
+This agent is developed for informational and analytical purposes only. NOT FINANCIAL ADVICE. All analytical signals produced by this 13-Chain agent should be used purely for research and tool-level insights.
 ```
