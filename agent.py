@@ -310,22 +310,6 @@ async def fetch_rss_updates(ctx: Context):
     debug_print_intelligence(ctx)
 
 # ==================================================
-# 🔄 X402 / uAgents Retry Verification Engine
-# ==================================================
-async def verify_onchain_payment_with_retry(ctx: Context, tx_id: str, expected_amount: str, max_retries: int = 3, delay: float = 3.0) -> bool:
-    for attempt in range(1, max_retries + 1):
-        ctx.logger.info(f"🔍 [Payment Verification] Try {attempt}/{max_retries} | TxHash Masked: {tx_id[:6]}...{tx_id[-4:] if len(tx_id)>10 else ''}")
-        
-        if tx_id and len(tx_id) >= 10 and not tx_id.startswith("0x_invalid"):
-            return True
-            
-        if attempt < max_retries:
-            ctx.logger.warning(f"⏳ [Payment Pending] トランザクション未確定。{delay}秒後に再確認します...")
-            await asyncio.sleep(delay)
-            
-    return False
-
-# ==================================================
 # 🚀 起動 ＆ 定期タスク (Background Tasks)
 # ==================================================
 @agent.on_event("startup")
@@ -346,9 +330,6 @@ async def scheduled_news_task(ctx: Context):
 async def check_and_update_task(ctx: Context):
     global last_checked_sepolia_block, latest_chain_data, latest_detected_signals, latest_market_data
     
-    # --------------------------------------------------
-    # Step 1: 13-Chain オンチェーン監視の実行
-    # --------------------------------------------------
     try:
         res_block = requests.post(SEPOLIA_RPC_URL, json={"jsonrpc": "2.0", "method": "eth_blockNumber", "params": [], "id": 1}, timeout=5)
         if res_block.status_code == 200 and "result" in res_block.json():
@@ -386,16 +367,10 @@ async def check_and_update_task(ctx: Context):
     except Exception as e:
         pass
 
-    # --------------------------------------------------
-    # Step 2: Farside BTC ETF Flow Data 取得
-    # --------------------------------------------------
     loop = asyncio.get_event_loop()
     etf_data = await loop.run_in_executor(None, fetch_farside_btc_etf_flow)
     latest_market_data["btc_etf_flow"] = etf_data
 
-    # --------------------------------------------------
-    # Step 3: CoinGecko Metal/RWA スキャンを実行
-    # --------------------------------------------------
     for cat_id in COINGECKO_TARGET_CATEGORIES:
         tokens = await loop.run_in_executor(None, fetch_coingecko_category, cat_id)
         if tokens:
@@ -406,64 +381,24 @@ async def check_and_update_task(ctx: Context):
                     ctx.logger.info(f"🚨 [{cat_id.upper()} 急沸騰検知] {t.get('symbol','').upper()}: +{p_change:.2f}% (24h)")
 
 # ==================================================
-# 💰 動的見積もり ＆ 決済自動納品 (Protocols)
+# 💰 直接レスポンス返信ハンドラー
 # ==================================================
 @agent.on_message(model=DataQueryRequest)
 async def handle_dynamic_quote(ctx: Context, sender: str, msg: DataQueryRequest):
     requested_target = (msg.chain_name or "all").lower()
-    
-    if requested_target in ["full", "intelligence", "full_intelligence"]:
-        quoted_price, desc = "3.0", "Institutional Grade Combined Intelligence (13-Chain + BTC ETF + RWA/Metal + Macro/X402)"
-    elif requested_target in ["news", "regulatory", "macro"]:
-        quoted_price, desc = "1.0", "Macro Financial & Regulatory News Package"
-    elif requested_target in ["market", "rwa", "metal", "etf"]:
-        quoted_price, desc = "1.5", "RWA, Metal & BTC ETF Flow Market Intelligence Package"
-    elif requested_target in ["all", "summary"]:
-        quoted_price, desc = "0.5", "Complete 13-Chain Unified Status Summary"
-    else:
-        quoted_price, desc = "0.1", f"Single Chain On-Chain Data for '{requested_target}'"
+    ctx.logger.info(f"📩 [{sender}] リクエスト受信: Target='{requested_target}'")
 
-    ctx.logger.info(f"📩 [{sender}] リクエスト受信: Target='{requested_target}' ➔ 見積もり: {quoted_price} FET")
-
-    payment_quote = RequestPayment(
-        accepted_funds=[Funds(amount=quoted_price, currency="FET", payment_method="fet_direct")],
-        recipient=str(agent.wallet.address()),
-        deadline_seconds=300,
-        reference=f"quote_{requested_target}_{int(time.time())}",
-        description=desc
+    response_data = DataQueryResponse(
+        agent_version=CURRENT_VERSION,
+        timestamp=time.time(),
+        chain_statuses=latest_chain_data,
+        market_intelligence=latest_market_data,
+        latest_signals=generate_intelligence_signals(),
+        news_intelligence=latest_news_data,
+        disclaimer=LEGAL_DISCLAIMER_TEXT
     )
-    await ctx.send(sender, payment_quote)
-
-@agent.on_message(model=CommitPayment)
-async def handle_paid_delivery(ctx: Context, sender: str, msg: CommitPayment):
-    ctx.logger.info(f"💳 [{sender}] から着金通知を受信")
-    
-    is_verified = await verify_onchain_payment_with_retry(
-        ctx=ctx,
-        tx_id=msg.transaction_id,
-        expected_amount=msg.funds.amount,
-        max_retries=3,
-        delay=3.0
-    )
-    
-    if is_verified:
-        response_data = DataQueryResponse(
-            agent_version=CURRENT_VERSION,
-            timestamp=time.time(),
-            chain_statuses=latest_chain_data,
-            market_intelligence=latest_market_data,
-            latest_signals=generate_intelligence_signals(),
-            news_intelligence=latest_news_data,
-            disclaimer=LEGAL_DISCLAIMER_TEXT
-        )
-        await ctx.send(sender, response_data)
-        ctx.logger.info(f"🎉 [{sender}] への統合インテリジェンスデータの納品が完了しました！")
-    else:
-        ctx.logger.error(f"❌ [{sender}] 着金検証失敗 - 納品をキャンセルしました")
-        error_msg = ChatMessage(
-            message=f"⚠️ [HTTP 402 Payment Required] 着金確認がタイムアウトしました。TxHash を確認の上、再試行してください。"
-        )
-        await ctx.send(sender, error_msg)
+    await ctx.send(sender, response_data)
+    ctx.logger.info(f"🎉 [{sender}] へのデータ送信が完了しました！")
 
 # ==================================================
 # 🏁 3. エージェントの起動 (Bottom of file)
