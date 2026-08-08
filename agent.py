@@ -1,24 +1,23 @@
 # ==================================================
-# 📦 1. モジュール・ライブラリの読み込み
+# 📦 1. モジュール・ライブラリの読み込み (Top of file)
 # ==================================================
 import asyncio
-import os
 import re
+import requests
 import time
 import urllib.request
 import xml.etree.ElementTree as ET
-import requests
+import os
 from uagents import Agent, Context, Model, Protocol
 
 # ==================================================
-# ⚙️ 2. 基本設定 ＆ Agentverse Cloud 初期化
+# ⚙️ 2. 基本設定 ＆ グローバル変数定義
 # ==================================================
-CURRENT_VERSION = "2.5.0-cloud"
+CURRENT_VERSION = "2.5.0"
 
-# Agentverse Secretsからシードを取得（設定されていない場合は自動生成）
-AGENT_SEED = os.getenv("AGENT_SEED", "13chain_rwa_oracle_default_seed")
+# Agentverse Secretsから登録済みのAGENT_SEEDを直接読み込み
+AGENT_SEED = os.getenv("AGENT_SEED")
 
-# クラウドホスティング用Agent初期化 (port/endpointはAgentverseが自動制御)
 agent = Agent(
     name="13chain-rwa-intell-agent",
     seed=AGENT_SEED
@@ -82,7 +81,7 @@ class CommitPayment(Model):
     reference: str
 
 # --------------------------------------------------
-# 🌐 エンドポイント & アドレス定義 (Secretsからの動的取得)
+# 🌐 エンドポイント & アドレス定義 (Secret管理へ移行)
 # --------------------------------------------------
 DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL", "")
 
@@ -119,7 +118,7 @@ LEGAL_DISCLAIMER_TEXT = (
 )
 
 # --------------------------------------------------
-# 🚨 アラート・通知モジュール
+# 🚨 アラート・通知モジュール (Discord / Logger)
 # --------------------------------------------------
 def send_discord_message(message_text: str):
     """Discord Webhook 経由でアラートを送信"""
@@ -146,7 +145,7 @@ latest_detected_signals = {
 }
 
 # ==================================================
-# 📰 RSS_FEEDS 収集モジュール
+# 📰 RSS_FEEDS 辞書（超国家機関・政府・規制・メガバンク統合）
 # ==================================================
 RSS_FEEDS = {
     "house_financial": "https://financialservices.house.gov/news/rss.aspx",
@@ -194,10 +193,13 @@ def parse_rss_xml(url: str) -> list:
     return entries
 
 # ==================================================
-# 📈 Farside BTC ETF ＆ CoinGecko データ取得
+# 📈 Farside Bitcoin ETF Flow RAW Collector
 # ==================================================
 def fetch_farside_btc_etf_flow() -> dict:
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    """Farside InvestorsからBTC ETFの最新日次資金流入出RAWデータを取得・抽出"""
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    }
     try:
         res = requests.get(FARSIDE_BTC_URL, headers=headers, timeout=10)
         if res.status_code == 200:
@@ -217,6 +219,9 @@ def fetch_farside_btc_etf_flow() -> dict:
         print(f"⚠️ Farside ETF Fetch Error: {e}")
     return {"source": "Farside Investors", "status": "FAILED"}
 
+# ==================================================
+# 📊 CoinGecko API Collector (RWA & Metal Categories)
+# ==================================================
 COINGECKO_TARGET_CATEGORIES = [
     "real-world-assets-rwa",
     "gold-backed",
@@ -243,7 +248,7 @@ def fetch_coingecko_category(category_id: str) -> list:
     return []
 
 # ==================================================
-# 🧠 インテリジェンス分析 ＆ 照合エンジン
+# 🧠 オンチェーン ✕ ニュース ✕ ETF ✕ 市場照合 ＆ ログエンジン
 # ==================================================
 KEYWORD_MAP = {
     "ripple": ["xrpl", "ripple", "sec", "cross-border", "cbdc", "rlusd", "buidl"],
@@ -295,6 +300,7 @@ def debug_print_intelligence(ctx: Context):
             ctx.logger.info(f"    - Matched Keywords: {', '.join(sig['matched_topics'])}")
             ctx.logger.info(f"    - Summary: {sig['summary']}")
             
+            # 高コンフィデンスシグナル検知時の Discord アラート送信
             alert_msg = (
                 f"🧠 **[Intelligence Signal Alert]**\n"
                 f"• Chain: `{sig['chain'].upper()}` (Confidence: {sig['confidence']} / Score: {sig['score']})\n"
@@ -326,11 +332,11 @@ async def fetch_rss_updates(ctx: Context):
 # ==================================================
 @agent.on_event("startup")
 async def startup_handler(ctx: Context):
-    ctx.logger.info(f"🚀 [Agentverse Cloud] エージェント起動 (Ver: {CURRENT_VERSION}) | Address: {agent.address}")
+    ctx.logger.info(f"🚀 エージェント起動 (Ver: {CURRENT_VERSION}) | Address: {agent.address}")
     await fetch_rss_updates(ctx)
     send_discord_message(
-        f"🚀 **13-Chain Unified Ledger Spy Agent (Cloud Ver: `{CURRENT_VERSION}`) 起動**\n"
-        f"• 監視対象: 13-Chain + BTC ETF Flow + RWA/Metal Market + Macro Intelligence\n"
+        f"🚀 **13-Chain Unified Ledger Spy Agent (Ver: `{CURRENT_VERSION}`) 起動**\n"
+        f"• 監視対象: 13-Chain + BTC ETF Flow + RWA/Metal Market + Macro/X402 Intelligence\n"
         f"• データ提供アドレス: `{agent.address}`"
     )
 
@@ -342,7 +348,9 @@ async def scheduled_news_task(ctx: Context):
 async def check_and_update_task(ctx: Context):
     global last_checked_sepolia_block, latest_chain_data, latest_detected_signals, latest_market_data
     
-    # 🔍 Sepolia オンチェーン・イベント監視
+    # --------------------------------------------------
+    # 🔍 Sepolia オンチェーン・イベント監視 & アラート
+    # --------------------------------------------------
     try:
         res_block = requests.post(SEPOLIA_RPC_URL, json={"jsonrpc": "2.0", "method": "eth_blockNumber", "params": [], "id": 1}, timeout=5)
         if res_block.status_code == 200 and "result" in res_block.json():
@@ -380,7 +388,9 @@ async def check_and_update_task(ctx: Context):
     except Exception as e:
         ctx.logger.error(f"🚨 [Sepolia] エラー保護: {e}")
 
+    # --------------------------------------------------
     # 🔍 Bitcoin & XRPL 状態更新
+    # --------------------------------------------------
     try:
         res_btc = requests.get(BTC_API_URL, timeout=5)
         if res_btc.status_code == 200:
@@ -392,12 +402,16 @@ async def check_and_update_task(ctx: Context):
     except Exception as e:
         pass
 
+    # --------------------------------------------------
     # 🔍 Farside BTC ETF 資金流出入更新
+    # --------------------------------------------------
     loop = asyncio.get_event_loop()
     etf_data = await loop.run_in_executor(None, fetch_farside_btc_etf_flow)
     latest_market_data["btc_etf_flow"] = etf_data
 
+    # --------------------------------------------------
     # 🔍 CoinGecko RWA / Gold 市場急沸騰アラート
+    # --------------------------------------------------
     for cat_id in COINGECKO_TARGET_CATEGORIES:
         tokens = await loop.run_in_executor(None, fetch_coingecko_category, cat_id)
         if tokens:
@@ -439,7 +453,7 @@ async def handle_dynamic_quote(ctx: Context, sender: str, msg: DataQueryRequest)
     ctx.logger.info(f"🎉 [{sender}] へのデータ送信が完了しました！")
 
 # ==================================================
-# 🏁 3. エージェント起動エントリーポイント
+# 🏁 3. エージェントの起動 (Bottom of file)
 # ==================================================
 if __name__ == "__main__":
     agent.run()
