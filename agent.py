@@ -15,8 +15,13 @@ from uagents import Agent, Context, Model, Protocol
 # ==================================================
 CURRENT_VERSION = "2.5.0"
 
-AGENT_SEED = os.getenv("AGENT_SEED", "xxxxxxxxxxxxxxx")
-agent = Agent(name="onchain_event_agent")
+AGENT_SEED = os.getenv("AGENT_SEED")
+agent = Agent(
+    name="subagent_13chain",
+    seed=AGENT_SEED,
+    port=8003,
+    endpoint=["http://127.0.0.1:8003/submit"],
+)
 
 latest_news_data = {}
 latest_market_data = {}
@@ -112,14 +117,18 @@ LEGAL_DISCLAIMER_TEXT = (
     "for informational and analytical purposes only. It does not constitute investment, legal, or tax advice."
 )
 
+# --------------------------------------------------
+# 🚨 アラート・通知モジュール (Discord / Logger)
+# --------------------------------------------------
 def send_discord_message(message_text: str):
+    """Discord Webhook 経由でアラートを送信"""
     if not DISCORD_WEBHOOK_URL or "discord.com" not in DISCORD_WEBHOOK_URL:
         return
     payload = {"content": message_text, "username": "13-Chain Unified Ledger Agent"}
     try:
         requests.post(DISCORD_WEBHOOK_URL, json=payload, timeout=5)
     except Exception as e:
-        print(f"Discord送信エラー: {e}")
+        print(f"⚠️ Discord送信エラー: {e}")
 
 last_checked_sepolia_block = None
 
@@ -290,6 +299,15 @@ def debug_print_intelligence(ctx: Context):
             ctx.logger.info(f"[{idx}] Chain: {sig['chain'].upper()} | Confidence: {sig['confidence']} (Score: {sig['score']})")
             ctx.logger.info(f"    - Matched Keywords: {', '.join(sig['matched_topics'])}")
             ctx.logger.info(f"    - Summary: {sig['summary']}")
+            
+            # 高コンフィデンスシグナル検知時の Discord アラート送信
+            alert_msg = (
+                f"🧠 **[Intelligence Signal Alert]**\n"
+                f"• Chain: `{sig['chain'].upper()}` (Confidence: {sig['confidence']} / Score: {sig['score']})\n"
+                f"• Matched Topics: `{', '.join(sig['matched_topics'])}`\n"
+                f"• Summary: {sig['summary']}"
+            )
+            send_discord_message(alert_msg)
     ctx.logger.info("==================================================")
 
 async def fetch_rss_updates(ctx: Context):
@@ -330,6 +348,9 @@ async def scheduled_news_task(ctx: Context):
 async def check_and_update_task(ctx: Context):
     global last_checked_sepolia_block, latest_chain_data, latest_detected_signals, latest_market_data
     
+    # --------------------------------------------------
+    # 🔍 Sepolia オンチェーン・イベント監視 & アラート
+    # --------------------------------------------------
     try:
         res_block = requests.post(SEPOLIA_RPC_URL, json={"jsonrpc": "2.0", "method": "eth_blockNumber", "params": [], "id": 1}, timeout=5)
         if res_block.status_code == 200 and "result" in res_block.json():
@@ -346,16 +367,30 @@ async def check_and_update_task(ctx: Context):
                 if res_logs.status_code == 200 and "result" in res_logs.json():
                     for log in res_logs.json()["result"]:
                         contract_addr = log.get("address", "").lower()
+                        event_name = None
+                        
                         if contract_addr == LINK_TOKEN_ADDRESS:
                             latest_detected_signals["last_link_event"] = current_block
+                            event_name = "Chainlink (LINK) Token Transfer"
                         elif contract_addr == CCIP_ROUTER_ADDRESS:
                             latest_detected_signals["last_ccip_event"] = current_block
+                            event_name = "Chainlink CCIP Router Message"
                         elif contract_addr == ONDO_TOKEN_ADDRESS:
                             latest_detected_signals["last_ondo_event"] = current_block
+                            event_name = "Ondo Finance Token Transfer"
+                        
+                        if event_name:
+                            alert_msg = f"⚡ **[Sepolia Event Alert]** {event_name} detected in block `#{current_block}`"
+                            ctx.logger.info(alert_msg)
+                            send_discord_message(alert_msg)
+
             last_checked_sepolia_block = current_block
     except Exception as e:
         ctx.logger.error(f"🚨 [Sepolia] エラー保護: {e}")
 
+    # --------------------------------------------------
+    # 🔍 Bitcoin & XRPL 状態更新
+    # --------------------------------------------------
     try:
         res_btc = requests.get(BTC_API_URL, timeout=5)
         if res_btc.status_code == 200:
@@ -367,10 +402,16 @@ async def check_and_update_task(ctx: Context):
     except Exception as e:
         pass
 
+    # --------------------------------------------------
+    # 🔍 Farside BTC ETF 資金流出入更新
+    # --------------------------------------------------
     loop = asyncio.get_event_loop()
     etf_data = await loop.run_in_executor(None, fetch_farside_btc_etf_flow)
     latest_market_data["btc_etf_flow"] = etf_data
 
+    # --------------------------------------------------
+    # 🔍 CoinGecko RWA / Gold 市場急沸騰アラート
+    # --------------------------------------------------
     for cat_id in COINGECKO_TARGET_CATEGORIES:
         tokens = await loop.run_in_executor(None, fetch_coingecko_category, cat_id)
         if tokens:
@@ -378,7 +419,18 @@ async def check_and_update_task(ctx: Context):
             for t in tokens:
                 p_change = t.get("price_change_percentage_24h") or 0.0
                 if p_change >= 10.0:
-                    ctx.logger.info(f"🚨 [{cat_id.upper()} 急沸騰検知] {t.get('symbol','').upper()}: +{p_change:.2f}% (24h)")
+                    symbol = t.get('symbol', '').upper()
+                    name = t.get('name', symbol)
+                    price = t.get('current_price', 0)
+                    
+                    alert_msg = (
+                        f"🚨 **[{cat_id.upper()} 急沸騰検知]**\n"
+                        f"• 銘柄: **{name} ({symbol})**\n"
+                        f"• 24h変動率: **+{p_change:.2f}%**\n"
+                        f"• 現在価格: `${price}`"
+                    )
+                    ctx.logger.info(f"🚨 [{cat_id.upper()} 急沸騰検知] {symbol}: +{p_change:.2f}% (24h)")
+                    send_discord_message(alert_msg)
 
 # ==================================================
 # 💰 直接レスポンス返信ハンドラー
@@ -404,4 +456,19 @@ async def handle_dynamic_quote(ctx: Context, sender: str, msg: DataQueryRequest)
 # 🏁 3. エージェントの起動 (Bottom of file)
 # ==================================================
 if __name__ == "__main__":
+    from uagents_core.utils.registration import (
+        register_chat_agent,
+        RegistrationRequestCredentials,
+    )
+
+    # Agentverseへの個別登録（Stock Agent用の名前を指定）
+    register_chat_agent(
+        "subagent_13chain_local",  # 👈 各子エージェントに応じた固有の名前に変更
+        "https://agentverse.ai",
+        active=True,
+        credentials=RegistrationRequestCredentials(
+            agentverse_api_key=os.environ["AGENTVERSE_KEY"],
+            agent_seed_phrase=os.environ["AGENT_SEED_PHRASE"],
+        ),
+    )
     agent.run()
