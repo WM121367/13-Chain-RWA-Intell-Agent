@@ -19,7 +19,6 @@ WMMO_ADDR = os.getenv("WMMO_ADDR")
 # 2. Agent初期化
 agent = Agent(
     name="13chain-rwa-intell-agent",
-    seed=AGENT_SEED
 )
 
 latest_news_data = {}
